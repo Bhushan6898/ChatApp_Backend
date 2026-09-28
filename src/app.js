@@ -8,7 +8,12 @@ import { errorHandler } from './middleware/errorHandler.js'
 const app = express()
 
 const frontendOrigin = (process.env.FRONTEND_ORIGIN || 'http://localhost:5173').trim().replace(/\/+$/, '')
-app.use(cors({ origin: frontendOrigin }))
+app.use(
+  cors({
+    origin: "https://livechatapplications.netlify.app/",
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '1mb' }))
 app.get('/api/health', (_request, response) => {
   const connected = mongoose.connection.readyState === 1
