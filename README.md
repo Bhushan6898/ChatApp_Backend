@@ -14,8 +14,10 @@ Express 5 REST API backed by MongoDB through Mongoose. Copy `.env.example` to `.
 ## Endpoints
 
 - `GET /api/health` checks API and database availability.
-- `POST /api/users` registers a user with `{ "name": "Ari Lane", "email": "ari@example.com", "password": "at-least-8-chars" }`. Passwords are hashed with bcrypt and never returned.
-- `GET /api/users?search=ari` lists public user fields for conversation discovery.
+- `GET /api/connection` confirms the backend is reachable and returns `{ "connected": true, "databaseConnected": true }` (the database field is `false` when MongoDB is unavailable).
+- `POST /api/user/register` registers a user with `{ "name": "Ari Lane", "email": "ari@example.com", "password": "at-least-8-chars" }`. Passwords are hashed with bcrypt and never returned.
+- `POST /api/user/login` accepts `{ "email": "ari@example.com", "password": "at-least-8-chars" }` and returns the public user fields when the credentials match. Invalid credentials return `401`. This endpoint does not issue a token or create a session.
+- `GET /api/user?search=ari` lists public user fields for conversation discovery.
 - `GET /api/conversations?userId=<id>&folder=inbox|starred|archived` lists a user's conversations.
 - `POST /api/conversations` creates one with `{ "userId": "<creator-id>", "participantIds": ["<other-id>"], "title": "Optional group title" }`. Group conversations require a title.
 - `GET /api/conversations/:id?userId=<id>` fetches a conversation for one of its participants.

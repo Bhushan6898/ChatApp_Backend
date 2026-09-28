@@ -13,7 +13,14 @@ app.get('/api/health', (_request, response) => {
   const connected = mongoose.connection.readyState === 1
   response.status(connected ? 200 : 503).json({ status: connected ? 'ok' : 'unavailable' })
 })
-app.use('/api/users', userRoutes)
+app.get('/api/connection', (_request, response) => {
+  response.json({
+    connected: true,
+    databaseConnected: mongoose.connection.readyState === 1,
+    message: 'Connection to the server is successful',
+  })
+})
+app.use('/api/user', userRoutes)
 app.use('/api/conversations', conversationRoutes)
 app.use(errorHandler)
 

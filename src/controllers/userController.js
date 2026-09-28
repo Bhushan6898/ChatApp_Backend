@@ -9,6 +9,8 @@ function publicUser(user) {
 }
 
 export async function createUser(request, response) {
+ 
+  
   const name = typeof request.body?.name === 'string' ? request.body.name.trim() : ''
   const email = typeof request.body?.email === 'string' ? request.body.email.trim().toLowerCase() : ''
   const password = typeof request.body?.password === 'string' ? request.body.password : ''
@@ -22,7 +24,26 @@ export async function createUser(request, response) {
 
   const passwordHash = await bcrypt.hash(password, 12)
   const user = await User.create({ name, email, passwordHash })
+
   response.status(201).json(publicUser(user))
+}
+
+export async function loginUser(request, response) {
+  const email = typeof request.body?.email === 'string' ? request.body.email.trim().toLowerCase() : ''
+  const password = typeof request.body?.password === 'string' ? request.body.password : ''
+
+  if (!email || !password) {
+    throw httpError(400, 'Email and password are required.')
+  }
+
+  const user = await User.findOne({ email }).select('+passwordHash')
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    throw httpError(401, 'Invalid email or password.')
+  }
+
+  const result = publicUser(user)
+  console.log('Login response:', result)
+  response.json(result)
 }
 
 export async function listUsers(request, response) {
