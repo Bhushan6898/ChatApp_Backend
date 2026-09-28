@@ -1,0 +1,20 @@
+import cors from 'cors'
+import express from 'express'
+import mongoose from 'mongoose'
+import conversationRoutes from './routes/conversationRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import { errorHandler } from './middleware/errorHandler.js'
+
+const app = express()
+
+app.use(cors({ origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173' }))
+app.use(express.json({ limit: '1mb' }))
+app.get('/api/health', (_request, response) => {
+  const connected = mongoose.connection.readyState === 1
+  response.status(connected ? 200 : 503).json({ status: connected ? 'ok' : 'unavailable' })
+})
+app.use('/api/users', userRoutes)
+app.use('/api/conversations', conversationRoutes)
+app.use(errorHandler)
+
+export default app
